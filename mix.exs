@@ -30,7 +30,8 @@ defmodule LiveViewScreenshots.MixProject do
       {:phoenix_live_view, "~> 0.15.0"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.22", only: :docs},
-      {:floki, ">= 0.27.0", only: :test}
+      {:floki, ">= 0.27.0", only: :test},
+      {:chrome_remote_interface, "~> 0.4.1"}
     ]
   end
 end
