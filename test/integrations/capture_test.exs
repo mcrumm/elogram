@@ -23,15 +23,15 @@ defmodule PhoenixLiveViewTestScreenshots.CaptureTest do
     assert render(view) =~ "count: 0"
 
     assert view |> capture_screenshot("counter_live_0.png", namespace: namespace) == view
-    assert File.exists?(Path.join([save_path, "counter_live_0.png"]), [:raw])
+    assert [save_path, "counter_live_0.png"] |> Path.join() |> File.exists?()
 
-    assert view |> element("button", "&plus;&plus;") |> render_click() =~ "count: 1"
+    assert view |> element("button", "Increment") |> render_click() =~ "count: 1"
     assert view |> capture_screenshot("counter_live_1.png", namespace: namespace) == view
-    assert File.exists?(Path.join([save_path, "counter_live_1.png"]), [:raw])
+    assert [save_path, "counter_live_1.png"] |> Path.join() |> File.exists?()
 
-    assert view |> element("button", "&plus;&plus;") |> render_click() =~ "count: 2"
+    assert view |> element("button", "Increment") |> render_click() =~ "count: 2"
     assert view |> capture_screenshot("counter_live_2.png", namespace: namespace) == view
-    assert File.exists?(Path.join([save_path, "counter_live_2.png"]), [:raw])
+    assert [save_path, "counter_live_2.png"] |> Path.join() |> File.exists?()
   end
 
   def unique_screenshots_name do

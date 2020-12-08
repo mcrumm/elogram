@@ -3,8 +3,8 @@ defmodule PhoenixLiveViewScreenshotsTest.CounterLive do
 
   def render(assigns) do
     ~L"""
-    <p>count: <%= @count %><p>
-    <button phx-click="count++">&plus;&plus;</button>
+    <p>count: <%= @count %></p>
+    <button phx-click="count++">Increment</button>
     """
   end
 

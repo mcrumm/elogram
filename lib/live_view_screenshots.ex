@@ -26,7 +26,7 @@ defmodule PhoenixLiveViewTestScreenshots.Browser do
 
   @impl true
   def init(options) do
-    with {:ok, save_path} <- validate(options, :save_path),
+    with {:ok, save_path} <- validate(options, :save_path, "tmp/screenshots"),
          server = ChromeRemoteInterface.Session.new(options),
          {:ok, page} <- ChromeRemoteInterface.Session.new_page(server),
          {:ok, pid} <- ChromeRemoteInterface.PageSession.start_link(page) do
@@ -78,8 +78,8 @@ defmodule PhoenixLiveViewTestScreenshots.Browser do
     """)
   end
 
-  defp validate(options, :save_path) do
-    with path = Keyword.get_lazy(options, :save_path, &System.tmp_dir!/0),
+  defp validate(options, :save_path, default) do
+    with path = Keyword.get(options, :save_path, default),
          :ok <- File.mkdir_p(path) do
       {:ok, path}
     end
