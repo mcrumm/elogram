@@ -1,21 +1,59 @@
 # LiveViewScreenshots
 
-**TODO: Add description**
+Capture screenshots from Phoenix LiveView tests
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+The package can be installed
 by adding `live_view_screenshots` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:live_view_screenshots, "~> 0.1.0"}
+    {:live_view_screenshots,
+       only: :test, git: "https://github.com/mcrumm/live_view_screenshots.git"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/live_view_screenshots](https://hexdocs.pm/live_view_screenshots).
+## Capturing Screenshots
+
+Start the screenshots server in `test/test_helper.exs`:
+
+```diff
++ PhoenixLiveViewTestScreenshots.start()
+ExUnit.start()
+```
+
+Then capture a screenshot from your LiveView:
+
+```elixir
+defmodule MyAppWeb.PageLiveTest do
+
+```
+
+## Test Setup
+
+### Headless Chrome
+
+Start a headless browser before running your tests:
+
+**Github Actions**
+```yaml
+steps:
+    - name: Start Google Chrome
+      run: google-chrome --headless --disable-gpu --remote-debugging-port=9222 &
+```
+
+**MacOS**
+```sh
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless --disable-gpu --remote-debugging-port=9222
+```
+
+By default screenshots will be saved to `tmp/screenshots`, so you may wish to update your `.gitignore` file to include the tmp directory:
+
+```.gitignore
+# Temporary files for e.g. tests
+/tmp
+```
 
