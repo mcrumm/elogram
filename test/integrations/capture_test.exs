@@ -9,16 +9,21 @@ defmodule PhoenixLiveViewTestScreenshots.CaptureTest do
   @endpoint Endpoint
 
   setup do
-    {:ok, screenshots} = PhoenixLiveViewTestScreenshots.start(name: unique_screenshots_name())
+    {:ok, _pid} =
+      PhoenixLiveViewTestScreenshots.start(
+        name: screenshots_name = unique_screenshots_name(),
+        save_path: save_path = Path.absname("tmp/screenshots")
+      )
+
     {:ok, live, _} = live(Phoenix.ConnTest.build_conn(), "/counter")
-    %{live: live, screenshots: screenshots}
+    %{live: live, screenshots: screenshots_name, save_path: save_path}
   end
 
-  test "captures screenshots", %{live: view, screenshots: namespace} do
+  test "captures screenshots", %{live: view, screenshots: namespace, save_path: save_path} do
     assert render(view) =~ "count: 0"
 
-    assert view |> capture_screenshot(path, namespace: namespace) == view
-    assert File.exists?(Path.join([System.tmp_dir!(), path]))
+    assert view |> capture_screenshot("counter_live_0.png", namespace: namespace) == view
+    assert File.exists?(Path.join([save_path, "counter_live_0.png"]), [:raw])
   end
 
   def unique_screenshots_name do

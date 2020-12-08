@@ -26,10 +26,11 @@ defmodule PhoenixLiveViewTestScreenshots.Browser do
 
   @impl true
   def init(options) do
-    with server = ChromeRemoteInterface.Session.new(options),
+    with {:ok, save_path} <- validate(options, :save_path),
+         server = ChromeRemoteInterface.Session.new(options),
          {:ok, page} <- ChromeRemoteInterface.Session.new_page(server),
          {:ok, pid} <- ChromeRemoteInterface.PageSession.start_link(page) do
-      {:ok, %{server: server, page: page, page_pid: pid} |> IO.inspect()}
+      {:ok, %{server: server, page: page, page_pid: pid, save_path: save_path}}
     end
   end
 
@@ -38,8 +39,9 @@ defmodule PhoenixLiveViewTestScreenshots.Browser do
   end
 
   @impl true
-  def handle_call({:screenshot, path, html, opts}, _from, %{page_pid: pid} = state) do
-    result = take_screenshot(pid, path, html, opts)
+  def handle_call({:screenshot, path, html, opts}, _from, state) do
+    joined_path = Path.join([state.save_path, path])
+    result = take_screenshot(state.page_pid, joined_path, html, opts)
     {:reply, result, state}
   end
 
@@ -51,7 +53,7 @@ defmodule PhoenixLiveViewTestScreenshots.Browser do
          :ok <- File.write(path, image) do
       {:ok, %{nav: nav["result"], screenshot: path}}
     else
-      {:error, error} -> handle_error(error)
+      {:error, error} -> handle_error(error, path)
     end
   end
 
@@ -67,12 +69,19 @@ defmodule PhoenixLiveViewTestScreenshots.Browser do
     end
   end
 
-  defp handle_error(error) do
+  defp handle_error(error, path) do
     IO.warn("""
-      Error taking screenshot:
+      Error capturing screenshot to #{path}:
 
       #{inspect(error)}
 
     """)
+  end
+
+  defp validate(options, :save_path) do
+    with path = Keyword.get_lazy(options, :save_path, &System.tmp_dir!/0),
+         :ok <- File.mkdir_p(path) do
+      {:ok, path}
+    end
   end
 end
