@@ -27,7 +27,8 @@ defmodule LiveViewScreenshots.MixProject do
 
   defp deps do
     [
-      {:phoenix_live_view, "~> 0.15.0"},
+      {:phoenix_live_view, "~> 0.15.0",
+       github: "phoenixframework/phoenix_live_view", branch: "master"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.22", only: :docs},
       {:floki, ">= 0.27.0", only: :test},
