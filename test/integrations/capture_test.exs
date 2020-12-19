@@ -1,4 +1,4 @@
-defmodule PhoenixLiveViewTestScreenshots.CaptureTest do
+defmodule LiveViewScreenshots.CaptureTest do
   use ExUnit.Case, async: true
   import Phoenix.ConnTest
 
