@@ -1,32 +1,37 @@
-defmodule PhoenixLiveViewTest.CaptureScreenshot do
+defmodule LiveViewScreenshots.CaptureScreenshot do
   @moduledoc """
-  Functionality to capture LiveView screenshots for testing.
+  Functionality to capture LiveView screenshots for debugging.
   """
-  alias PhoenixLiveViewTestScreenshots.Browser
+  alias LiveViewScreenshots.Server
 
   @doc """
   Captures a screenshot of a LiveView under test.
 
-  ## Options
-
-    * `:namespace` - Optional. The screenshot namespace.
-      Defaults to `PhoenixLiveViewTestScreenshots`.
-
   ## Examples
 
-      test "one thousand words" end
-        {:ok, view, _} = live("/")
-        assert render(view) =~ "Welcome to Phoenix!"
+      defmodule MyAppWeb.PageLiveTest do
+        use MyAppWeb, :live_view
+        import LiveViewScreenshots.CaptureScreenshot
 
-        capture_screenshot(view, "screenshot.png")
+        test "a thousand words", %{conn: conn} end
+          {:ok, view, _} = live(conn, "/")
+          assert render(view) =~ "Welcome to Phoenix!"
+
+          capture_screenshot(view, "screenshot.png")
+        end
       end
   """
-  def capture_screenshot(view, path, opts \\ []) do
-    {namespace, opts} = Keyword.pop(opts, :namespace, PhoenixLiveViewTestScreenshots)
+  def capture_screenshot(view_or_element, path) do
+    capture_screenshot(LiveViewScreenshots, view_or_element, path)
+  end
 
-    Phoenix.LiveViewTest.open_browser(view, fn html ->
-      Browser.capture_screenshot(namespace, path, html, opts)
-      html
-    end)
+  @doc """
+  See `capture_screenshot/2` for options.
+  """
+  def capture_screenshot(server, view_or_element, path) when is_atom(server) do
+    Phoenix.LiveViewTest.open_browser(
+      view_or_element,
+      &Server.capture_screenshot(server, path, &1, [])
+    )
   end
 end

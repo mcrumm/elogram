@@ -1,13 +1,17 @@
-defmodule PhoenixLiveViewTestScreenshots do
+defmodule LiveViewScreenshots do
   @moduledoc """
-  Helpers for `Phoenix.LiveViewTest` to capture screenshots.
+  Capture screenshots with the `Phoenix.LiveViewTest` Element API.
   """
-  alias PhoenixLiveViewTestScreenshots.Browser
+  alias LiveViewScreenshots.Server
 
-  defdelegate start(options), to: Browser, as: :start_link
+  @doc """
+  Starts a server to take screenshots in tests.
+  """
+  defdelegate start(options), to: Server, as: :start_link
 end
 
-defmodule PhoenixLiveViewTestScreenshots.Screenshot do
+defmodule LiveViewScreenshots.Screenshot do
+  @moduledoc false
   defstruct [
     :browser_pid,
     :html_path,
@@ -15,18 +19,21 @@ defmodule PhoenixLiveViewTestScreenshots.Screenshot do
   ]
 end
 
-defmodule PhoenixLiveViewTestScreenshots.Browser do
+defmodule LiveViewScreenshots.Server do
+  @moduledoc false
   use GenServer
   alias ChromeRemoteInterface
 
+  @default_save_path "tmp/screenshots"
+
   def start_link(arg) do
-    name = arg[:name] || PhoenixLiveViewTestScreenshots
+    name = arg[:name] || LiveViewScreenshots
     GenServer.start_link(__MODULE__, arg, name: name)
   end
 
   @impl true
   def init(options) do
-    with {:ok, save_path} <- validate(options, :save_path, "tmp/screenshots"),
+    with {:ok, save_path} <- validate(options, :save_path, @default_save_path),
          server = ChromeRemoteInterface.Session.new(options),
          {:ok, page} <- ChromeRemoteInterface.Session.new_page(server),
          {:ok, pid} <- ChromeRemoteInterface.PageSession.start_link(page) do
@@ -34,8 +41,8 @@ defmodule PhoenixLiveViewTestScreenshots.Browser do
     end
   end
 
-  def capture_screenshot(browser, path, html, opts) do
-    GenServer.call(browser, {:screenshot, path, html, opts})
+  def capture_screenshot(server, path, html, opts) do
+    GenServer.call(server, {:screenshot, path, html, opts})
   end
 
   @impl true

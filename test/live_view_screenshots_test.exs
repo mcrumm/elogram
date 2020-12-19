@@ -1,4 +1,4 @@
-defmodule PhoenixLiveViewTestScreenshotsUnitTest do
+defmodule LiveViewScreenshotsUnitTest do
   use ExUnit.Case, async: true
 
   test "the truth" do
