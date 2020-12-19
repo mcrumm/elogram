@@ -7,9 +7,10 @@ defmodule PhoenixLiveViewTestScreenshots.CaptureTest do
   alias LiveViewScreenshotsTest.Endpoint
 
   @endpoint Endpoint
+  @moduletag tmp_dir: "screenshots"
 
-  setup do
-    %{name: server_name, save_path: save_path} = start_server!()
+  setup %{tmp_dir: tmp_dir} do
+    %{name: server_name, save_path: save_path} = start_server!(save_path: tmp_dir)
     {:ok, live, _} = live(Phoenix.ConnTest.build_conn(), "/counter")
     %{live: live, screenshots: server_name, save_path: save_path}
   end
@@ -29,7 +30,7 @@ defmodule PhoenixLiveViewTestScreenshots.CaptureTest do
     assert [save_path, "counter_live_2.png"] |> Path.join() |> File.exists?()
   end
 
-  defp start_server!(opts \\ []) do
+  defp start_server!(opts) do
     opts =
       opts
       |> Keyword.put_new_lazy(:name, &unique_server_name/0)
