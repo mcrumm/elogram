@@ -1,6 +1,7 @@
 # LiveViewScreenshots
 
-Capture screenshots from Phoenix LiveView tests
+<!-- MDOC -->
+Capture screenshots with the [`Phoenix.LiveViewTest`](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveViewTest.html) Element API.
 
 ## Installation
 
@@ -21,7 +22,7 @@ end
 Start the screenshots server in `test/test_helper.exs`:
 
 ```diff
-+ PhoenixLiveViewTestScreenshots.start()
++ LiveViewScreenshots.start()
 ExUnit.start()
 ```
 
@@ -29,7 +30,16 @@ Then capture a screenshot from your LiveView:
 
 ```elixir
 defmodule MyAppWeb.PageLiveTest do
+  use MyAppWeb, :live_view
+  import LiveViewScreenshots.CaptureScreenshot
 
+  test "a thousand words", %{conn: conn} end
+    {:ok, view, _} = live(conn, "/")
+    assert render(view) =~ "Welcome to Phoenix!"
+
+    capture_screenshot(view, "screenshot.png")
+  end
+end
 ```
 
 ## Test Setup
@@ -57,3 +67,4 @@ By default screenshots will be saved to `tmp/screenshots`, so you may wish to up
 /tmp
 ```
 
+<!-- MDOC -->
