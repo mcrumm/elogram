@@ -42,5 +42,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: screenshots ${{ matrix.elixir }} ${{ matrix.otp }}
-        path: tmp/screenshots
+        path: tmp/**/screenshots
         retention-days: 14
