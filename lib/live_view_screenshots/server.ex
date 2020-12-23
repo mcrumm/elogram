@@ -13,11 +13,30 @@ defmodule LiveViewScreenshots.Server do
 
   @impl true
   def init(options) do
-    with {:ok, save_path} <- validate(options, :save_path, @default_save_path),
+    with {:save_path, {:ok, save_path}} <- {:save_path, validate(options, :save_path)},
          server = ChromeRemoteInterface.Session.new(options),
          {:ok, page} <- ChromeRemoteInterface.Session.new_page(server),
          {:ok, pid} <- ChromeRemoteInterface.PageSession.start_link(page) do
       {:ok, %{server: server, page: page, page_pid: pid, save_path: save_path}}
+    else
+      {:error, error} ->
+        IO.warn("""
+          Error connecting to Chrome headless session:
+
+          #{inspect(error)}
+        """)
+
+      {:save_path, {:error, error}} ->
+        path = save_path(options)
+
+        IO.warn("""
+          Failed to save screenshots on path #{path}:
+
+          #{inspect(error)}
+        """)
+
+      error ->
+        error
     end
   end
 
@@ -65,10 +84,16 @@ defmodule LiveViewScreenshots.Server do
     """)
   end
 
-  defp validate(options, :save_path, default) do
-    with path = Keyword.get(options, :save_path, default),
+  defp validate(options, :save_path) do
+    with path = save_path(options),
          :ok <- File.mkdir_p(path) do
       {:ok, path}
+    else
+      error -> error
     end
+  end
+
+  defp save_path(options) do
+    Keyword.get(options, :save_path, @default_save_path)
   end
 end
