@@ -26,6 +26,8 @@ defmodule LiveViewScreenshots.Server do
           #{inspect(error)}
         """)
 
+        {:stop, :error_chrome}
+
       {:save_path, {:error, error}} ->
         path = save_path(options)
 
@@ -34,6 +36,8 @@ defmodule LiveViewScreenshots.Server do
 
           #{inspect(error)}
         """)
+
+        {:stop, :invalid_save_path}
 
       error ->
         error
