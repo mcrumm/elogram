@@ -60,7 +60,7 @@ defmodule LiveViewScreenshots.Server do
     {:ok, nav} = navigate(pid, to: "file://#{html}")
 
     with {:ok, image} <- capture_decode_screenshot(pid, opts),
-         :ok <- File.write(path, image) do
+         :ok <- save_screenshot_on_disk(path, image) do
       {:ok, %{nav: nav["result"], screenshot: path}}
     else
       {:error, error} -> handle_error(error, path)
@@ -86,6 +86,13 @@ defmodule LiveViewScreenshots.Server do
       #{inspect(error)}
 
     """)
+  end
+
+  defp save_screenshot_on_disk(path, contents) do
+    with dir = Path.dirname(path),
+         :ok <- File.mkdir_p(dir) do
+      File.write(path, contents)
+    end
   end
 
   defp validate(options, :save_path) do
