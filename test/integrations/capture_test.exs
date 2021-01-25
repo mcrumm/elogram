@@ -45,10 +45,14 @@ defmodule LiveViewScreenshots.CaptureTest do
   end
 
   test "handle server init error" do
+    import ExUnit.CaptureIO
+
     opts = [port: "0000"]
 
-    assert {:error, {:error_chrome, _}} =
-             start_supervised({LiveViewScreenshots.Server, opts}, id: :server_error)
+    capture_io(:stderr, fn ->
+      assert {:error, {:error_chrome, _}} =
+               start_supervised({LiveViewScreenshots.Server, opts}, id: :server_error)
+    end) =~ "Error connecting to Chrome"
   end
 
   defp start_server!(opts \\ []) do
