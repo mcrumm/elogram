@@ -32,6 +32,7 @@ defmodule LiveViewScreenshots.MixProject do
     [
       {:phoenix_live_view, "~> 0.15.0",
        github: "phoenixframework/phoenix_live_view", branch: "master"},
+      {:nimble_pool, "~> 0.2"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.22", only: :docs},
       {:floki, ">= 0.27.0", only: :test},

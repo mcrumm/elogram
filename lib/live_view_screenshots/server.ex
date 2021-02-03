@@ -1,80 +1,83 @@
 defmodule LiveViewScreenshots.Server do
   # Server to drive a headless chrome page.
   @moduledoc false
-  use GenServer
   alias ChromeRemoteInterface
+  alias ChromeRemoteInterface.RPC.Page
 
   @default_save_path "tmp/screenshots"
 
-  def start_link(arg) do
-    name = arg[:name] || LiveViewScreenshots
-    GenServer.start_link(__MODULE__, arg, name: name)
+  def child_spec(opts) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [opts]}
+    }
   end
 
-  @impl true
-  def init(options) do
-    with {:save_path, {:ok, save_path}} <- {:save_path, validate(options, :save_path)},
-         server = ChromeRemoteInterface.Session.new(options),
-         {:ok, page} <- ChromeRemoteInterface.Session.new_page(server),
-         {:ok, pid} <- ChromeRemoteInterface.PageSession.start_link(page) do
-      {:ok, %{server: server, page: page, page_pid: pid, save_path: save_path}}
-    else
-      {:error, error} ->
-        IO.warn("""
-          Error connecting to Chrome headless session:
+  def start_link(opts) do
+    name = Keyword.get(opts, :name, LiveViewScreenshots)
+    pool_name = :"#{name}.Pool"
+    pool_size = Keyword.get_lazy(opts, :pool_size, &System.schedulers_online/0)
+    host = Keyword.get(opts, :host, "localhost")
+    port = Keyword.get(opts, :port, 9222)
 
-          #{inspect(error)}
-        """)
+    worker_state =
+      case validate(opts, :save_path) do
+        {:ok, save_path} ->
+          %{host: host, port: port, save_path: save_path}
 
-        {:stop, :error_chrome}
+        {:error, reason} ->
+          raise reason
+      end
 
-      {:save_path, {:error, error}} ->
-        path = save_path(options)
-
-        IO.warn("""
-          Failed to save screenshots on path #{path}:
-
-          #{inspect(error)}
-        """)
-
-        {:stop, :invalid_save_path}
-
-      error ->
-        error
-    end
+    NimblePool.start_link(
+      lazy: true,
+      name: pool_name,
+      pool_size: pool_size,
+      worker: {LiveViewScreenshots.Browser, worker_state}
+    )
   end
 
-  def capture_screenshot(server, path, html, opts) do
-    GenServer.call(server, {:screenshot, path, html, opts})
+  @page_load_event "Page.loadEventFired"
+  @doc """
+  Captures a screenshot.
+  """
+  def capture_screenshot(url, path, server, opts \\ []) do
+    pool_timeout = Keyword.get(opts, :pool_timeout, 5000)
+    receive_timeout = Keyword.get(opts, :receive_timeout, 15000)
+
+    NimblePool.checkout!(
+      :"#{server}.Pool",
+      {:checkout, path},
+      fn _, {page, joined_path} ->
+        {:ok, _} = Page.navigate(page, %{url: "file://#{url}"})
+
+        receive do
+          {:chrome_remote_interface, @page_load_event, _data} ->
+            case take_screenshot(page, joined_path, opts) do
+              {:ok, _} = ok -> {ok, :ok}
+              error -> {error, :close}
+            end
+        after
+          receive_timeout ->
+            exit(:receive_timeout)
+        end
+      end,
+      pool_timeout
+    )
   end
 
-  @impl true
-  def handle_call({:screenshot, path, html, opts}, _from, state) do
-    joined_path = Path.join([state.save_path, path])
-    result = take_screenshot(state.page_pid, joined_path, html, opts)
-    {:reply, result, state}
-  end
-
-  defp take_screenshot(pid, path, html, opts) do
-    # Navigate to the html file
-    {:ok, nav} = navigate(pid, to: "file://#{html}")
-
-    with {:ok, image} <- capture_decode_screenshot(pid, opts),
+  defp take_screenshot(page, path, opts) do
+    with {:ok, image} <- capture_decode_screenshot(page, opts),
          :ok <- save_screenshot_on_disk(path, image) do
-      {:ok, %{nav: nav["result"], screenshot: path}}
+      {:ok, path}
     else
       {:error, error} -> handle_error(error, path)
     end
   end
 
-  defp navigate(pid, opts) do
-    ChromeRemoteInterface.RPC.Page.navigate(pid, %{url: opts[:to]})
-  end
-
-  defp capture_decode_screenshot(pid, _opts) do
-    # Capture and decode the raw screenshot data
-    with {:ok, %{"result" => %{"data" => bytes}}} <-
-           ChromeRemoteInterface.RPC.Page.captureScreenshot(pid) do
+  # Capture and decode the raw screenshot data
+  defp capture_decode_screenshot(page, _opts) do
+    with {:ok, %{"result" => %{"data" => bytes}}} <- Page.captureScreenshot(page) do
       Base.decode64(bytes)
     end
   end
@@ -96,10 +99,10 @@ defmodule LiveViewScreenshots.Server do
   end
 
   defp validate(options, :save_path) do
-    with path = save_path(options),
-         :ok <- File.mkdir_p(path) do
-      {:ok, path}
-    else
+    path = save_path(options)
+
+    case File.mkdir_p(path) do
+      :ok -> {:ok, path}
       error -> error
     end
   end

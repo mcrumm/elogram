@@ -31,7 +31,7 @@ defmodule LiveViewScreenshots.CaptureScreenshot do
   def capture_screenshot(server, view_or_element, path) when is_atom(server) do
     Phoenix.LiveViewTest.open_browser(
       view_or_element,
-      &Server.capture_screenshot(server, path, &1, [])
+      &Server.capture_screenshot(&1, path, server, [])
     )
   end
 end
