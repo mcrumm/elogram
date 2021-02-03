@@ -50,7 +50,7 @@ defmodule LiveViewScreenshots.CaptureTest do
     opts = [name: unique_server_name(), port: "0000"]
 
     capture_io(:stderr, fn ->
-      assert {:error, {:eaddrnotavail, _}} =
+      assert {:error, {:chrome_error, _}} =
                start_supervised({LiveViewScreenshots.Server, opts}, id: :server_error)
     end) =~ "Error connecting to Chrome"
   end

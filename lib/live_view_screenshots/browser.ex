@@ -9,8 +9,18 @@ defmodule LiveViewScreenshots.Browser do
   @impl NimblePool
   def init_pool(arg) do
     case ensure_browser_is_running(arg) do
-      {:ok, server} -> {:ok, %{server: server, save_path: arg[:save_path]}}
-      {:error, reason} -> {:stop, reason}
+      {:ok, server} ->
+        {:ok, %{server: server, save_path: arg[:save_path]}}
+
+      {:error, reason} ->
+        IO.warn("""
+          Error connecting to Chrome at #{arg[:host]}:#{arg[:port]}, got:
+
+          #{inspect(reason)}
+
+        """)
+
+        {:stop, :chrome_error}
     end
   end
 
