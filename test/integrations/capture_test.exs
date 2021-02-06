@@ -12,17 +12,16 @@ defmodule LiveViewScreenshots.CaptureTest do
     %{name: server_name, save_path: save_path} = start_server!()
     {:ok, live, _} = live(Phoenix.ConnTest.build_conn(), "/counter")
 
-    clean_tmp_screenshots([
-      Path.join([save_path, "counter_live_0.png"]),
-      Path.join([save_path, "counter_live_1.png"]),
-      Path.join([save_path, "counter_live_2.png"]),
-      Path.join([save_path, "nested/path/counter_live_0.png"])
-    ])
-
     %{live: live, screenshots: server_name, save_path: save_path}
   end
 
   test "captures screenshots", %{live: view, screenshots: server, save_path: save_path} do
+    clean_tmp_screenshots([
+      Path.join([save_path, "counter_live_0.png"]),
+      Path.join([save_path, "counter_live_1.png"]),
+      Path.join([save_path, "counter_live_2.png"])
+    ])
+
     assert render(view) =~ "count: 0"
 
     assert server |> capture_screenshot(view, "counter_live_0.png") == view
@@ -38,6 +37,7 @@ defmodule LiveViewScreenshots.CaptureTest do
   end
 
   test "save to nested path", %{live: view, screenshots: server, save_path: save_path} do
+    clean_tmp_screenshots([Path.join([save_path, "nested/path/counter_live_0.png"])])
     assert render(view) =~ "count: 0"
 
     assert server |> capture_screenshot(view, "nested/path/counter_live_0.png") == view
