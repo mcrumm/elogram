@@ -41,7 +41,7 @@ defmodule LiveViewScreenshots.Browser do
       end,
       pool_timeout
     )
-    |> Map.update!(:captured_bytes, &Base.decode64!/1)
+    |> maybe_decode_bytes!()
   end
 
   defp screenshot_for_pool(%Screenshot{browser: browser}) when not is_nil(browser),
@@ -68,6 +68,14 @@ defmodule LiveViewScreenshots.Browser do
 
   defp handle_result(%Screenshot{error: nil} = screenshot), do: {screenshot, :ok}
   defp handle_result(%Screenshot{error: reason}), do: {{:error, reason}, :close}
+
+  defp maybe_decode_bytes!(%Screenshot{error: nil} = screenshot) do
+    Map.update!(screenshot, :captured_bytes, &Base.decode64!/1)
+  end
+
+  defp maybe_decode_bytes!(%Screenshot{} = screenshot) do
+    screenshot
+  end
 
   ## Pool stuff
 
