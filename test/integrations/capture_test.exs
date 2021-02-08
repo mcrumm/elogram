@@ -24,15 +24,15 @@ defmodule Elogram.CaptureTest do
 
     assert render(view) =~ "count: 0"
 
-    assert server |> capture_screenshot(view, "counter_live_0.png") == view
+    assert view |> capture_screenshot(name: "counter_live_0.png", browser: server) == view
     assert [save_path, "counter_live_0.png"] |> Path.join() |> File.exists?()
 
     assert view |> element("button", "Increment") |> render_click() =~ "count: 1"
-    assert server |> capture_screenshot(view, "counter_live_1.png") == view
+    assert view |> capture_screenshot(name: "counter_live_1.png", browser: server) == view
     assert [save_path, "counter_live_1.png"] |> Path.join() |> File.exists?()
 
     assert view |> element("button", "Increment") |> render_click() =~ "count: 2"
-    assert server |> capture_screenshot(view, "counter_live_2.png") == view
+    assert view |> capture_screenshot(name: "counter_live_2.png", browser: server) == view
     assert [save_path, "counter_live_2.png"] |> Path.join() |> File.exists?()
   end
 
@@ -40,7 +40,9 @@ defmodule Elogram.CaptureTest do
     clean_tmp_screenshots([Path.join([save_path, "nested/path/counter_live_0.png"])])
     assert render(view) =~ "count: 0"
 
-    assert server |> capture_screenshot(view, "nested/path/counter_live_0.png") == view
+    assert view |> capture_screenshot(name: "nested/path/counter_live_0.png", browser: server) ==
+             view
+
     assert [save_path, "nested/path/counter_live_0.png"] |> Path.join() |> File.exists?()
   end
 

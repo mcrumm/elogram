@@ -39,12 +39,10 @@ defmodule Elogram.Screenshot do
           :error => nil | term()
         }
 
-  @default_name "screenshot.png"
-
   @doc """
   Builds a `#{inspect(__MODULE__)}`.
   """
-  def new(url, name \\ @default_name) when is_binary(url) and is_binary(name) do
+  def new(url, name) when is_binary(url) and is_binary(name) do
     %__MODULE__{name: name, url: url}
   end
 end

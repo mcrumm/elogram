@@ -39,8 +39,8 @@ defmodule MyAppWeb.PageLiveTest do
     {:ok, view, _} = live(conn, "/")
 
     assert view
-      |> capture_screenshot("welcome.png")
-      |> render() =~ "Welcome to Phoenix!"
+           |> capture_screenshot(name: "welcome.png")
+           |> render() =~ "Welcome to Phoenix!"
   end
 end
 ```

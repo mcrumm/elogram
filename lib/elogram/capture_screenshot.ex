@@ -14,24 +14,20 @@ defmodule Elogram.CaptureScreenshot do
 
         test "a thousand words", %{conn: conn} end
           {:ok, view, _} = live(conn, "/")
-          assert render(view) =~ "Welcome to Phoenix!"
 
-          capture_screenshot(view, "screenshot.png")
+          assert view
+                 |> capture_screenshot(name: "welcome.png")
+                 |> render() =~ "Welcome to Phoenix!"
         end
       end
   """
-  def capture_screenshot(view_or_element, name) do
-    capture_screenshot(Elogram, view_or_element, name)
-  end
+  def capture_screenshot(view_or_element, opts \\ []) do
+    name = opts[:name] || raise ArgumentError, "name is required for capture_screenshot/2"
 
-  @doc """
-  See `capture_screenshot/2` for options.
-  """
-  def capture_screenshot(server, view_or_element, name) when is_atom(server) do
     Phoenix.LiveViewTest.open_browser(view_or_element, fn html ->
       "file://#{html}"
-      |> Elogram.screenshot(name)
-      |> Elogram.capture!(server)
+      |> Elogram.Screenshot.new(name)
+      |> Elogram.capture!(opts[:browser] || Elogram)
     end)
   end
 end
