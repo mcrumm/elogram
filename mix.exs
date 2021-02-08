@@ -30,8 +30,7 @@ defmodule Elogram.MixProject do
 
   defp deps do
     [
-      {:phoenix_live_view, "~> 0.15.0",
-       github: "phoenixframework/phoenix_live_view", branch: "master"},
+      {:phoenix_live_view, "~> 0.15.0"},
       {:nimble_pool, "~> 0.2"},
       {:jason, "~> 1.0", optional: true},
       {:ex_doc, "~> 0.22", only: :docs},
