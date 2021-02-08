@@ -32,7 +32,9 @@ Then capture a screenshot from your LiveView:
 
 ```elixir
 defmodule MyAppWeb.PageLiveTest do
-  use MyAppWeb, :live_view
+  use MyAppWeb.ConnCase
+
+  import Phoenix.LiveViewTest
   import Elogram.CaptureScreenshot
 
   test "a thousand words", %{conn: conn} end
