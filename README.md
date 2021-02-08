@@ -24,7 +24,7 @@ end
 Start the screenshots server in `test/test_helper.exs`:
 
 ```diff
-+ Elogram.start()
++ Elogram.start([])
 ExUnit.start()
 ```
 
