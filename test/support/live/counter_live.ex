@@ -1,5 +1,5 @@
-defmodule LiveViewScreenshotsTest.CounterLive do
-  use Phoenix.LiveView, namespace: LiveViewScreenshotsTest
+defmodule ElogramTest.CounterLive do
+  use Phoenix.LiveView, namespace: ElogramTest
 
   def render(assigns) do
     ~L"""

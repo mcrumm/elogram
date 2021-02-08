@@ -1,7 +1,7 @@
-defmodule LiveViewScreenshots.FS do
+defmodule Elogram.FS do
   # File system helpers
   @moduledoc false
-  alias LiveViewScreenshots.Screenshot
+  alias Elogram.Screenshot
 
   def save_to_disk!(screenshot, opts \\ [])
 

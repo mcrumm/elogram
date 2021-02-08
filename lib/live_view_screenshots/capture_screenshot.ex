@@ -1,4 +1,4 @@
-defmodule LiveViewScreenshots.CaptureScreenshot do
+defmodule Elogram.CaptureScreenshot do
   @moduledoc """
   Functionality to capture LiveView screenshots for debugging.
   """
@@ -10,7 +10,7 @@ defmodule LiveViewScreenshots.CaptureScreenshot do
 
       defmodule MyAppWeb.PageLiveTest do
         use MyAppWeb, :live_view
-        import LiveViewScreenshots.CaptureScreenshot
+        import Elogram.CaptureScreenshot
 
         test "a thousand words", %{conn: conn} end
           {:ok, view, _} = live(conn, "/")
@@ -21,7 +21,7 @@ defmodule LiveViewScreenshots.CaptureScreenshot do
       end
   """
   def capture_screenshot(view_or_element, name) do
-    capture_screenshot(LiveViewScreenshots, view_or_element, name)
+    capture_screenshot(Elogram, view_or_element, name)
   end
 
   @doc """
@@ -30,8 +30,8 @@ defmodule LiveViewScreenshots.CaptureScreenshot do
   def capture_screenshot(server, view_or_element, name) when is_atom(server) do
     Phoenix.LiveViewTest.open_browser(view_or_element, fn html ->
       "file://#{html}"
-      |> LiveViewScreenshots.screenshot(name)
-      |> LiveViewScreenshots.capture!(server)
+      |> Elogram.screenshot(name)
+      |> Elogram.capture!(server)
     end)
   end
 end

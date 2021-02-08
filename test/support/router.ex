@@ -1,4 +1,4 @@
-defmodule LiveViewScreenshotsTest.Router do
+defmodule ElogramTest.Router do
   use Phoenix.Router
   import Phoenix.LiveView.Router
 
@@ -17,7 +17,7 @@ defmodule LiveViewScreenshotsTest.Router do
     plug :fetch_live_flash
   end
 
-  scope "/", LiveViewScreenshotsTest do
+  scope "/", ElogramTest do
     pipe_through [:browser]
 
     live "/counter", CounterLive

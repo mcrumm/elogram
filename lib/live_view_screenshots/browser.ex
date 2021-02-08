@@ -1,10 +1,10 @@
-defmodule LiveViewScreenshots.Browser do
+defmodule Elogram.Browser do
   @moduledoc """
   The Browser process manages communication with a headless Chrome OS process.
   """
   @behaviour NimblePool
   alias ChromeRemoteInterface.{PageSession, RPC.Page, Session}
-  alias LiveViewScreenshots.Screenshot
+  alias Elogram.Screenshot
 
   defstruct host: "localhost", port: 9222, save_path: "tmp/screenshots"
 

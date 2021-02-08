@@ -1,11 +1,11 @@
-defmodule LiveViewScreenshots do
+defmodule Elogram do
   @external_resource "README.md"
   @moduledoc @external_resource
              |> File.read!()
              |> String.split("<!-- MDOC -->")
              |> Enum.fetch!(1)
 
-  alias LiveViewScreenshots.{Screenshot, Server}
+  alias Elogram.{Screenshot, Server}
 
   @doc """
   Starts a server to take screenshots in tests.

@@ -1,8 +1,8 @@
-defmodule LiveViewScreenshots.Server do
+defmodule Elogram.Server do
   # Server to drive a headless chrome page.
   @moduledoc false
   alias ChromeRemoteInterface
-  alias LiveViewScreenshots.{Browser, FS, Screenshot}
+  alias Elogram.{Browser, FS, Screenshot}
 
   def child_spec(opts) do
     %{
@@ -12,7 +12,7 @@ defmodule LiveViewScreenshots.Server do
   end
 
   def start_link(opts) do
-    name = Keyword.get(opts, :name, LiveViewScreenshots)
+    name = Keyword.get(opts, :name, Elogram)
     pool_name = :"#{name}.Pool"
     pool_size = Keyword.get_lazy(opts, :pool_size, &System.schedulers_online/0)
     browser = Browser.new!(opts)

@@ -1,4 +1,4 @@
-defmodule LiveViewScreenshots.Screenshot do
+defmodule Elogram.Screenshot do
   @moduledoc """
   A structure for capturing a screenshot.
   """
