@@ -1,10 +1,10 @@
-defmodule LiveViewScreenshots.CaptureTest do
+defmodule Elogram.CaptureTest do
   use ExUnit.Case, async: true
   import Phoenix.ConnTest
 
   import Phoenix.LiveViewTest
-  import LiveViewScreenshots.CaptureScreenshot
-  alias LiveViewScreenshotsTest.Endpoint
+  import Elogram.CaptureScreenshot
+  alias ElogramTest.Endpoint
 
   @endpoint Endpoint
 
@@ -51,7 +51,7 @@ defmodule LiveViewScreenshots.CaptureTest do
 
     capture_io(:stderr, fn ->
       assert {:error, {:chrome_error, _}} =
-               start_supervised({LiveViewScreenshots.Server, opts}, id: :server_error)
+               start_supervised({Elogram.Server, opts}, id: :server_error)
     end) =~ "Error connecting to Chrome"
   end
 
@@ -61,13 +61,13 @@ defmodule LiveViewScreenshots.CaptureTest do
       |> Keyword.put_new_lazy(:name, &unique_server_name/0)
       |> Keyword.put_new(:save_path, "tmp/screenshots")
 
-    pid = start_supervised!({LiveViewScreenshots.Server, opts})
+    pid = start_supervised!({Elogram.Server, opts})
 
     %{pid: pid, name: opts[:name], save_path: opts[:save_path]}
   end
 
   defp unique_server_name do
-    :"LiveViewScreenshots#{System.unique_integer([:positive, :monotonic])}"
+    :"Elogram#{System.unique_integer([:positive, :monotonic])}"
   end
 
   # Clean up tmp screenshots dir to make sure tests doesn't return false positives.

@@ -1,4 +1,4 @@
-defmodule LiveViewScreenshotsTest.EndpointOverridable do
+defmodule ElogramTest.EndpointOverridable do
   defmacro __before_compile__(_env) do
     quote do
       @parsers Plug.Parsers.init(
@@ -13,16 +13,16 @@ defmodule LiveViewScreenshotsTest.EndpointOverridable do
         %{conn | secret_key_base: config(:secret_key_base)}
         |> Plug.Parsers.call(@parsers)
         |> Plug.Conn.put_private(:phoenix_endpoint, __MODULE__)
-        |> LiveViewScreenshotsTest.Router.call([])
+        |> ElogramTest.Router.call([])
       end
     end
   end
 end
 
-defmodule LiveViewScreenshotsTest.Endpoint do
-  use Phoenix.Endpoint, otp_app: :phoenix_live_view
+defmodule ElogramTest.Endpoint do
+  use Phoenix.Endpoint, otp_app: :elogram
 
-  @before_compile LiveViewScreenshotsTest.EndpointOverridable
+  @before_compile ElogramTest.EndpointOverridable
 
   socket("/live", Phoenix.LiveView.Socket)
 
@@ -32,7 +32,7 @@ defmodule LiveViewScreenshotsTest.Endpoint do
   def config(:live_view), do: [signing_salt: "112345678212345678312345678412"]
   def config(:secret_key_base), do: String.duplicate("57689", 50)
   def config(:cache_static_manifest_latest), do: Process.get(:cache_static_manifest_latest)
-  def config(:otp_app), do: :phoenix_live_view
+  def config(:otp_app), do: :elogram
   def config(:pubsub_server), do: Phoenix.LiveView.PubSub
   def config(:render_errors), do: [view: __MODULE__]
   def config(which), do: super(which)

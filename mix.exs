@@ -1,11 +1,11 @@
-defmodule LiveViewScreenshots.MixProject do
+defmodule Elogram.MixProject do
   use Mix.Project
 
   @version "0.1.0"
 
   def project do
     [
-      app: :live_view_screenshots,
+      app: :elogram,
       version: @version,
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
@@ -42,10 +42,10 @@ defmodule LiveViewScreenshots.MixProject do
 
   defp docs do
     [
-      main: "LiveViewScreenshots",
+      main: "Elogram",
       source_ref: "v#{@version}",
-      source_url: "https://github.com/mcrumm/live_view_screenshots",
-      nest_modules_by_prefix: [LiveViewScreenshots]
+      source_url: "https://github.com/mcrumm/elogram",
+      nest_modules_by_prefix: [Elogram]
     ]
   end
 end
